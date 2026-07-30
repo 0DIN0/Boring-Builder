@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# App data & secrets
+.env
+instance/
+*.db
+*.sqlite3
+output/
+builds/
+
+# User-created models (keep the examples, ignore live copies)
+modelfiles/builder/
+modelfiles/chat/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

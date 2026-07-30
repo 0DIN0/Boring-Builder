@@ -1,0 +1,16 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+SQLAlchemy==2.0.31
+requests==2.32.3
+python-dotenv==1.0.1
+
+# Document parsing for the knowledge base (RAG). Pure-Python, no system libs.
+pypdf==4.3.1
+python-docx==1.1.2
+
+# Production server (used by the systemd unit).
+gunicorn==22.0.0
+
+# Uncomment if you point DATABASE_URL at MariaDB/MySQL instead of SQLite:
+# PyMySQL==1.1.1
