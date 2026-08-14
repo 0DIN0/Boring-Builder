@@ -1,0 +1,108 @@
+{% extends "_shell.html" %}
+{% block title %}Build · {{ app_name }}{% endblock %}
+{% block crumb %}Build a project{% endblock %}
+{% block content %}
+
+<!-- ============ BUILD ============ -->
+<section id="view-build">
+  <div class="page-head">
+    <h1>Build a project</h1>
+    <p>Describe what you want. The model plans the files, writes each one, checks it, and packages a zip.</p>
+  </div>
+
+  <div class="card card-pad">
+    <div class="field-row">
+      <label class="field"><span>Project name<span data-info="Used for the output folder and the downloaded zip. Letters, numbers and dashes.">&nbsp;</span></span>
+        <input type="text" id="bProject" value="my-project"></label>
+      <label class="field"><span>Model<span data-info="The builder model that generates the code. Create one under Builder models. 'Default' uses the model set in Settings.">&nbsp;</span></span>
+        <select id="bModel"><option value="">Default ({{ default_model or 'set in Settings' }})</option></select></label>
+    </div>
+    <label class="field"><span>Mode<span data-info="Manifest builds one file at a time (best for small models). Single-shot asks for the whole project at once (needs a strong model). Context size is set in Settings.">&nbsp;</span></span>
+      <select id="bMode">
+        <option value="manifest" {% if default_mode=='manifest' %}selected{% endif %}>Manifest (recommended)</option>
+        <option value="single" {% if default_mode=='single' %}selected{% endif %}>Single-shot</option>
+      </select></label>
+    <label class="field"><span>What should it build?<span data-info="Be specific: name the framework, the pages/endpoints, the data model, and any rules. One focused subsystem builds far better than a whole app at once.">&nbsp;</span></span>
+      <textarea id="bSpec" rows="7" placeholder="e.g. Build a Flask blueprint for user accounts: signup, login, password hashing, SQLAlchemy User model, secrets from .env."></textarea></label>
+
+    <div class="section-label">Quick starts</div>
+    <div class="spec-templates">
+      <button class="btn btn-sm tpl-chip" data-tpl="auth">User accounts</button>
+      <button class="btn btn-sm tpl-chip" data-tpl="crud">REST CRUD API</button>
+      <button class="btn btn-sm tpl-chip" data-tpl="admin">Admin dashboard</button>
+      <button class="btn btn-sm tpl-chip" data-tpl="payments">Payments</button>
+      <button class="btn btn-sm tpl-chip" data-tpl="deploy">Deploy stack</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" id="bRun">Build</button>
+      <button class="btn" id="bStop" style="display:none">Stop</button>
+    </div>
+  </div>
+
+  <div class="card card-pad hidden" id="bProgressCard" style="margin-top:16px">
+    <div class="section-bar">
+      <div class="section-label" style="margin:0">Build log</div>
+      <span class="spacer"></span>
+      <a class="btn btn-sm btn-primary hidden" id="bDownload" href="#">Download zip</a>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="bFill"></div></div>
+    <div class="log" id="bLog"></div>
+  </div>
+</section>
+
+<!-- ============ MODELS ============ -->
+<section id="view-models" class="hidden">
+  <div class="page-head">
+    <h1>Builder models</h1>
+    <p>Custom models that generate your projects. Each one you create is also saved to your <span class="mono">modelfiles/builder/</span> folder.</p>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    {% if user.is_admin %}<button class="btn btn-primary" id="mNew">New builder model</button>{% endif %}
+    <button class="btn" id="mRefresh">Refresh</button>
+  </div>
+  <div id="mGrid" class="row-list"></div>
+  <p class="hint-text hidden" id="mEmpty">No builder models yet. Create one sized to your hardware (see Settings → Hardware).</p>
+</section>
+
+<!-- ============ HISTORY ============ -->
+<section id="view-history" class="hidden">
+  <div class="page-head">
+    <h1>Build history</h1>
+    <p>Your recent builds. Re-run any of them, or download the zip again. Output folder: <span class="mono" id="hOutDir"></span></p>
+  </div>
+  <div id="hList" class="row-list"></div>
+  <p class="hint-text hidden" id="hEmpty">No builds yet.</p>
+</section>
+
+<!-- ============ GUIDE ============ -->
+<section id="view-guide" class="hidden">
+  {% include "_guide.html" %}
+</section>
+
+<!-- ===== New-model modal ===== -->
+<div class="modal-back" id="mModal">
+  <div class="modal-card">
+    <h2>New builder model</h2>
+    <p class="hint-text">Pick a base model that fits your hardware, give it a name, and adjust the instructions. Saved as <span class="mono" id="mNamePreview">builder-…</span></p>
+    <label class="field" style="margin-top:14px"><span>Name<span data-info="A short name. It becomes builder-&lt;name&gt; automatically.">&nbsp;</span></span>
+      <input type="text" id="mName" placeholder="e.g. web, api, python"></label>
+    <label class="field"><span>Base model (FROM)<span data-info="An installed model to build on. On an 8 GB GPU, a 7B coder like qwen2.5-coder:7b is a strong pick.">&nbsp;</span></span>
+      <select id="mBase"></select></label>
+    <label class="field"><span>Modelfile<span data-info="The recipe: FROM line, PARAMETERs, and the SYSTEM prompt that shapes behaviour. Edit the SYSTEM block to change how it builds.">&nbsp;</span></span>
+      <textarea id="mModelfile" class="mono" rows="14"></textarea></label>
+    <div class="log hidden" id="mLog"></div>
+    <div class="modal-actions">
+      <button class="btn" id="mCancel">Cancel</button>
+      <button class="btn" id="mClose" style="display:none">Close</button>
+      <button class="btn btn-primary" id="mCreate">Create model</button>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="mfStarter">{{ starter_modelfile|tojson }}</script>
+<script type="application/json" id="bctx">{ "defaultModel": {{ default_model|tojson }}, "outputDir": {{ output_dir|tojson }} }</script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+{% endblock %}

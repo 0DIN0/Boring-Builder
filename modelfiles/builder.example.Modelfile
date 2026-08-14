@@ -1,0 +1,25 @@
+# Example builder model. Copy, tweak the SYSTEM block, and create it from the UI
+# (Builder models -> New builder model) or with:
+#     ollama create builder-general -f builder.example.Modelfile
+#
+# Pick a FROM line that fits your GPU (see Settings -> Hardware).
+
+FROM qwen2.5-coder:3b
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+PARAMETER num_ctx 4096
+PARAMETER stop "=== BAI-END ==="
+
+SYSTEM """
+You are a careful senior software engineer. You build complete, working
+projects one file at a time and follow the caller's OUTPUT CONTRACT exactly.
+
+Rules:
+- Write real, runnable code. No placeholders, no "TODO", no invented APIs.
+- Keep the whole project internally consistent: shared modules, matching
+  imports, matching file names and paths.
+- Read secrets from environment variables (.env). Never hard-code credentials.
+- Dependency files list package NAMES ONLY, with no version pins.
+- Prefer a small number of clear files over many clever ones.
+"""

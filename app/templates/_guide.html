@@ -1,0 +1,56 @@
+<div class="page-head">
+  <h1>How to use the builder</h1>
+  <p>A quick tour, plus the habits that get good results out of a local model.</p>
+</div>
+
+<div class="card card-pad">
+  <div class="section-label">The 60-second version</div>
+  <ul class="tips">
+    <li><b>1. Pick a model.</b> Under <b>Builder models</b>, create one sized to your hardware (check Settings → Hardware for what fits).</li>
+    <li><b>2. Describe one subsystem.</b> On the Build page, write a specific spec — one focused piece, not a whole app.</li>
+    <li><b>3. Build.</b> The model plans the files, writes each one, checks the Python compiles, and packages a zip.</li>
+    <li><b>4. Download &amp; run.</b> Unzip, read the README, install requirements, run it.</li>
+  </ul>
+</div>
+
+<div class="card card-pad">
+  <div class="section-label">Write specs that actually build</div>
+  <p class="hint-text">A local model follows direction far better than it invents it. The more concrete you are, the better the output.</p>
+  <ul class="tips">
+    <li><b>Name the stack.</b> "Flask + SQLAlchemy + MySQL", not "a backend".</li>
+    <li><b>List the pieces.</b> Spell out the routes, the data model, and the rules: <code>"User model with email + password hash; /signup, /login, /logout; secrets from .env"</code>.</li>
+    <li><b>Build one thing at a time.</b> "User accounts" builds clean. "A whole social network" does not. Generate subsystems separately, then combine them.</li>
+    <li><b>Say where secrets go.</b> Add "read all secrets from .env" and you'll get a <code>.env.example</code> instead of hard-coded keys.</li>
+    <li><b>Ask for tests.</b> "Include a small pytest file" gives you a way to check it works.</li>
+  </ul>
+</div>
+
+<div class="card card-pad">
+  <div class="section-label">Making a model — the simple version</div>
+  <p class="hint-text">You don't need to know anything about training. A "builder model" is just a base model plus a set of instructions (a Modelfile). It takes about a minute.</p>
+  <ul class="tips">
+    <li>Go to <b>Builder models → New builder model</b>.</li>
+    <li>Give it a short name like <code>web</code> or <code>api</code>. It's saved as <code>builder-web</code> automatically.</li>
+    <li>Pick a base model that fits your hardware. On an 8 GB GPU, a 7B coder such as <code>qwen2.5-coder:7b</code> is a strong pick.</li>
+    <li>Edit the SYSTEM block if you want to change how it builds — the language, the framework, the house style. Everything else can stay as-is.</li>
+    <li>Click <b>Create</b>. A copy of the Modelfile is saved to <code>modelfiles/builder/</code> so you can version it later.</li>
+  </ul>
+  <p class="hint-text">Tip: keep a few specialised models rather than one do-everything model. A model told "you only write HTML, CSS and vanilla JavaScript" produces cleaner websites than a general one.</p>
+</div>
+
+<div class="card card-pad">
+  <div class="section-label">Which Ollama model should I use?</div>
+  <p class="hint-text">The <b>Settings → Hardware</b> panel detects your GPU and recommends models that fit. Rough rule of thumb:</p>
+  <div class="hw-grid">
+    <span class="k">≤ 4 GB VRAM</span><span>3B coder models at context 4096.</span>
+    <span class="k">6–8 GB VRAM</span><span>7B coder models (≈5 GB) at context 4096–8192 — the sweet spot.</span>
+    <span class="k">12 GB+ VRAM</span><span>13B+ models, larger context windows.</span>
+    <span class="k">No GPU</span><span>Runs on CPU — slower, but 3–4B models are usable.</span>
+  </div>
+  <p class="hint-text">If a build fails with an out-of-memory or 500 error, the model is too big for your GPU: pick a smaller one or lower the context size, then try again.</p>
+</div>
+
+<div class="card card-pad">
+  <div class="section-label">Honest expectations</div>
+  <p class="hint-text">A 7B model on an 8 GB GPU writes solid single files and well-scoped subsystems, noticeably better than a 3B. It still won't one-shot a production app to the standard of a frontier hosted model. Keep scopes small, review what comes out, and treat it as a fast first draft. Every model call runs through one place in the code (<code>ModelClient.chat</code>), so you can point it at a hosted API later for frontier-quality output without changing anything else.</p>
+</div>

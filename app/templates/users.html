@@ -1,0 +1,91 @@
+{% extends "_shell.html" %}
+{% block title %}Users · {{ app_name }}{% endblock %}
+{% block crumb %}Users{% endblock %}
+{% block nav_users %}active{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1>Users</h1>
+  <p>Manage who can sign in and what they can do.</p>
+</div>
+
+<div class="card card-pad">
+  <div class="section-bar"><h2>Add a user</h2></div>
+  <form method="POST" action="{{ url_for('accounts.users_create') }}">
+    <div class="field-row">
+      <label class="field"><span>Username</span>
+        <input type="text" name="username" autocomplete="off" required></label>
+      <label class="field"><span>Password<span data-info="At least 6 characters. The user can change it later from My account.">&nbsp;</span></span>
+        <input type="password" name="password" autocomplete="new-password" required></label>
+    </div>
+    <label class="checkbox"><input type="checkbox" name="is_admin">
+      <span>Make this user an administrator<span data-info="Admins can manage users, models, and settings.">&nbsp;</span></span></label>
+    <button type="submit" class="btn btn-primary">Create user</button>
+  </form>
+</div>
+
+<div class="card card-pad" style="margin-top:16px">
+  <div class="section-bar"><h2>All users <span class="pill dim">{{ users|length }}</span></h2></div>
+  <div class="row-list">
+    {% for u in users %}
+    <div class="row-item" style="flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0">
+        <div class="avatar">{{ u.username[0]|upper }}</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:8px">
+            <strong>{{ u.username }}</strong>
+            {% if u.is_admin %}<span class="pill">admin</span>{% endif %}
+            {% if not u.is_active %}<span class="pill warn">blocked</span>{% endif %}
+            {% if u.id == user.id %}<span class="pill dim">you</span>{% endif %}
+          </div>
+          <div class="meta">joined {{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        {% if u.is_active %}
+          <form method="POST" action="{{ url_for('accounts.users_update', uid=u.id) }}">
+            <input type="hidden" name="action" value="block">
+            <button class="btn btn-sm" {% if u.id == user.id %}disabled title="You cannot block yourself"{% endif %}>Block</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{{ url_for('accounts.users_update', uid=u.id) }}">
+            <input type="hidden" name="action" value="unblock">
+            <button class="btn btn-sm">Unblock</button>
+          </form>
+        {% endif %}
+
+        {% if u.is_admin %}
+          <form method="POST" action="{{ url_for('accounts.users_update', uid=u.id) }}">
+            <input type="hidden" name="action" value="revoke_admin">
+            <button class="btn btn-sm" {% if admin_count <= 1 %}disabled title="Cannot remove the last admin"{% endif %}>Revoke admin</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{{ url_for('accounts.users_update', uid=u.id) }}">
+            <input type="hidden" name="action" value="make_admin">
+            <button class="btn btn-sm">Make admin</button>
+          </form>
+        {% endif %}
+
+        <details class="inline-reset">
+          <summary class="btn btn-sm">Reset password</summary>
+          <form method="POST" action="{{ url_for('accounts.users_update', uid=u.id) }}" style="display:flex;gap:6px;margin-top:8px">
+            <input type="hidden" name="action" value="reset_password">
+            <input type="password" name="new_password" placeholder="new password" style="width:170px" required>
+            <button class="btn btn-sm btn-primary">Set</button>
+          </form>
+        </details>
+
+        {% if u.id != user.id %}
+        <form method="POST" action="{{ url_for('accounts.users_delete', uid=u.id) }}"
+              onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

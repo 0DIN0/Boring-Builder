@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create account · {{ app_name }}{% endblock %}
+{% block body %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h9"/></svg>
+      <div class="brand">{{ app_name }}<small>{{ app_tagline }}</small></div>
+    </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="auth-error">{{ messages[0] }}</div>{% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('auth.register') }}">
+      <label class="field"><span>Username</span>
+        <input type="text" name="username" autocomplete="username" autofocus required></label>
+      <label class="field"><span>Password</span>
+        <input type="password" name="password" autocomplete="new-password" required></label>
+      <button type="submit" class="btn btn-primary">Create account</button>
+    </form>
+    <p class="hint-text" style="text-align:center;margin-top:16px">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+  </div>
+</div>
+  <footer class="app-footer"><a href="https://omupondo.co.za" target="_blank" rel="noopener noreferrer">0|&gt;1|\|0</a></footer>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "_shell.html" %}
+{% block title %}My account · {{ app_name }}{% endblock %}
+{% block crumb %}My account{% endblock %}
+{% block nav_account %}active{% endblock %}
+{% block inner_class %}narrow{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1>My account</h1>
+  <p>Your sign-in details.</p>
+</div>
+
+<div class="card card-pad">
+  <div class="section-bar"><h2>Profile</h2></div>
+  <div class="hw-grid">
+    <span class="k">Username</span><span>{{ user.username }}</span>
+    <span class="k">Role</span><span>{{ 'Administrator' if user.is_admin else 'User' }}</span>
+    <span class="k">Can manage models</span><span>{{ 'Yes' if user.can_manage_models or user.is_admin else 'No' }}</span>
+    <span class="k">Member since</span><span>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '—' }}</span>
+    <span class="k">Last sign-in</span><span>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '—' }}</span>
+  </div>
+</div>
+
+<div class="card card-pad" style="margin-top:16px">
+  <div class="section-bar"><h2>Change password</h2></div>
+  <form method="POST" action="{{ url_for('accounts.change_password') }}">
+    <label class="field"><span>Current password</span>
+      <input type="password" name="current_password" autocomplete="current-password" required></label>
+    <label class="field"><span>New password<span data-info="At least 6 characters.">&nbsp;</span></span>
+      <input type="password" name="new_password" autocomplete="new-password" required></label>
+    <label class="field"><span>Confirm new password</span>
+      <input type="password" name="confirm_password" autocomplete="new-password" required></label>
+    <button type="submit" class="btn btn-primary">Update password</button>
+  </form>
+</div>
+
+{% endblock %}

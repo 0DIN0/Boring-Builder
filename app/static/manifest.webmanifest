@@ -1,0 +1,12 @@
+{
+  "name": "Boring Builder",
+  "short_name": "Builder",
+  "description": "Local AI project builder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070e",
+  "theme_color": "#05070e",
+  "icons": [
+    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

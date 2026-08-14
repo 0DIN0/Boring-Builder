@@ -1,0 +1,66 @@
+{% extends "_shell.html" %}
+{% block title %}Settings · {{ app_name }}{% endblock %}
+{% block crumb %}Settings{% endblock %}
+{% block nav_settings %}active{% endblock %}
+{% block inner_class %}narrow{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1>Settings</h1>
+  <p>Defaults for every build. Blank values fall back to environment variables or safe defaults.</p>
+</div>
+
+<!-- Hardware -->
+<div class="card card-pad">
+  <div class="section-bar">
+    <h2>Your hardware<span data-info="Detected from this machine. Recommendations are based on your GPU memory (VRAM) — bigger models need more.">&nbsp;</span></h2>
+    <span class="spacer"></span>
+    <button class="btn btn-sm btn-primary" id="hwApply" style="display:none">Apply recommendation</button>
+  </div>
+  <div id="hwBody"><p class="hint-text">Detecting hardware…</p></div>
+</div>
+
+<!-- Defaults -->
+<div class="card card-pad" style="margin-top:16px">
+  <div class="section-bar"><h2>Build defaults</h2></div>
+
+  <label class="field"><span>Default builder model<span data-info="Used when you don't pick a model on the Build page. Blank uses the BUILDER_MODEL environment variable.">&nbsp;</span></span>
+    <select id="s_builder_model"></select></label>
+
+  <div class="field-row">
+    <label class="field"><span>Default mode<span data-info="Manifest builds file-by-file (best for small models). Single-shot asks for the whole project at once.">&nbsp;</span></span>
+      <select id="s_builder_default_mode">
+        <option value="manifest">Manifest (recommended)</option>
+        <option value="single">Single-shot</option>
+      </select></label>
+    <label class="field"><span>Context size<span data-info="Tokens the model holds at once. On an 8 GB GPU, 8192 is a good default; 4096 is safest on 4 GB. Blank = auto.">&nbsp;</span></span>
+      <input type="number" id="s_builder_num_ctx" placeholder="auto" min="512" step="512"></label>
+  </div>
+
+  <div class="field-row">
+    <label class="field"><span>Temperature<span data-info="How adventurous the model is. Lower (0.2) = precise, consistent code. Blank = default.">&nbsp;</span></span>
+      <input type="text" id="s_builder_temperature" placeholder="0.2"></label>
+    <label class="field"><span>Max files<span data-info="Safety cap on how many files one build can create. Blank = default limit.">&nbsp;</span></span>
+      <input type="number" id="s_builder_max_files" placeholder="default" min="1"></label>
+  </div>
+
+  <label class="field"><span>Output folder<span data-info="Where finished projects are saved on disk. Blank uses a folder inside the app's data directory.">&nbsp;</span></span>
+    <input type="text" id="s_builder_output_dir" placeholder="default (data dir)"></label>
+
+  <label class="checkbox"><input type="checkbox" id="s_builder_keep_unzipped">
+    <span>Keep an unzipped copy after each build<span data-info="Also leave the raw project folder on disk, not just the zip.">&nbsp;</span></span></label>
+  <label class="checkbox"><input type="checkbox" id="s_builder_auto_export">
+    <span>Auto-export to the output folder<span data-info="Copy each finished build to your output folder automatically.">&nbsp;</span></span></label>
+
+  <p class="hint-text" id="resolvedOut" style="margin-top:10px"></p>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+    <button class="btn btn-primary" id="bsSave">Save settings</button>
+    <span class="pill ok" id="bsSaved" style="display:none">Saved</span>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/builder_settings.js') }}"></script>
+{% endblock %}

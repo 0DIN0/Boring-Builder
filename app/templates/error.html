@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · {{ app_name }}{% endblock %}
+{% block body %}
+<div class="auth-wrap">
+  <div class="auth-card" style="text-align:center">
+    <div style="font-family:var(--font-mono);font-size:40px;font-weight:700;color:var(--accent);margin-bottom:8px">{{ code }}</div>
+    <h1 style="font-size:20px;margin:0 0 8px">{{ title }}</h1>
+    <p class="hint-text" style="margin-bottom:20px">{{ message }}</p>
+    <a class="btn btn-primary" href="{{ url_for('index') }}" style="justify-content:center">Back to the builder</a>
+  </div>
+</div>
+  <footer class="app-footer"><a href="https://omupondo.co.za" target="_blank" rel="noopener noreferrer">0|&gt;1|\|0</a></footer>
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#05070e" id="themeColorMeta">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4 7h16M4 12h16M4 17h9' fill='none' stroke='%234d8df0' stroke-width='2' stroke-linecap='round'/></svg>">
+  <script>
+    /* Apply theme before first paint — matches the chat app's default
+       (dark + navy). A person can still toggle dark/light; we remember it. */
+    (function () {
+      var root = document.documentElement;
+      var p = {};
+      try { p = JSON.parse(localStorage.getItem("boringbuilder-appearance") || "{}") || {}; } catch (e) {}
+      var theme = p.theme || "dark";
+      if (theme === "system") {
+        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      root.setAttribute("data-theme", theme);
+      root.setAttribute("data-palette", "navy");
+      root.setAttribute("data-density", "comfortable");
+      root.setAttribute("data-font", "sans");
+      root.setAttribute("data-corners", "soft");
+      root.setAttribute("data-motion", "full");
+    })();
+  </script>
+</head>
+<body>
+  {% block body %}{% endblock %}
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+  {% block scripts %}{% endblock %}
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
